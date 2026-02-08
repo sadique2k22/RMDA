@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GitHub Release Downloader</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        background: #0e0e0e;
+        color: #eaeaea;
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 10px;
+    }
+    button {
+        background: #171717;
+        border: none;
+        border-radius: 10px;
+        padding: 14px;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        text-align: left;
+    }
+    button:hover {
+        background: #232323;
+    }
+    small {
+        opacity: 0.6;
+        font-size: 11px;
+        display: block;
+        margin-top: 4px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>One-Click GitHub Releases</h1>
+
+<div class="grid">
+    <button onclick="download('Dr-TSNG/ZygiskNext')">Zygisk Next<small>Dr-TSNG</small></button>
+    <button onclick="download('5ec1cff/TrickyStore')">Tricky Store<small>5ec1cff</small></button>
+    <button onclick="download('KOWX712/Tricky-Addon-Update-Target-List')">Tricky Addon<small>KOWX712</small></button>
+    <button onclick="download('osm0sis/PlayIntegrityFork')">Play Integrity Fork<small>osm0sis</small></button>
+    <button onclick="download('MeowDump/Integrity-Box')">Integrity Box<small>MeowDump</small></button>
+    <button onclick="download('JingMatrix/LSPosed')">LSPosed<small>JingMatrix</small></button>
+    <button onclick="download('snake-4/Zygisk-Assistant')">Zygisk Assistant<small>snake-4</small></button>
+    <button onclick="download('MhmRdd/NoHello')">NoHello<small>MhmRdd</small></button>
+    <button onclick="download('j-hc/zygisk-detach')">Zygisk Detach<small>j-hc</small></button>
+    <button onclick="download('Genymobile/scrcpy')">scrcpy<small>Genymobile</small></button>
+</div>
+
+<script>
+async function download(repo) {
+    const api = `https://api.github.com/repos/${repo}/releases/latest`;
+
+    try {
+        const res = await fetch(api);
+        const data = await res.json();
+
+        let zips = data.assets.filter(a =>
+            a.name.toLowerCase().endsWith('.zip') &&
+            !a.name.toLowerCase().includes('source')
+        );
+
+        if (!zips.length) {
+            alert('No ZIP assets found. Repo is misbehaving.');
+            return;
+        }
+
+        let releaseZips = zips.filter(a =>
+            a.name.toLowerCase().includes('release')
+        );
+
+        let candidates = releaseZips.length ? releaseZips : zips;
+
+        candidates.sort((a, b) =>
+            new Date(b.updated_at) - new Date(a.updated_at)
+        );
+
+        window.location.href = candidates[0].browser_download_url;
+
+    } catch {
+        alert('GitHub API failed. Internet or GitHub issue.');
+    }
+}
+</script>
+
+</body>
+</html>
