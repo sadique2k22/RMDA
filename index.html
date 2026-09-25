@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,16 +14,19 @@
         margin: 0;
         padding: 20px;
     }
+
     h1 {
         font-size: 20px;
         margin-bottom: 15px;
         text-align: center;
     }
+
     .grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 10px;
     }
+
     button {
         background: #171717;
         border: none;
@@ -33,9 +37,11 @@
         cursor: pointer;
         text-align: left;
     }
+
     button:hover {
         background: #232323;
     }
+
     small {
         opacity: 0.6;
         font-size: 11px;
@@ -50,64 +56,117 @@
 <h1>One-Click GitHub Releases</h1>
 
 <div class="grid">
-    <button onclick="download('Dr-TSNG/ZygiskNext')">Zygisk Next<small>Dr-TSNG</small></button>
-    <button onclick="download('5ec1cff/TrickyStore')">Tricky Store<small>5ec1cff</small></button>
-    <button onclick="download('KOWX712/Tricky-Addon-Update-Target-List')">Tricky Addon<small>KOWX712</small></button>
-    <button onclick="download('MeowDump/Integrity-Box')">Integrity Box<small>MeowDump</small></button>
-    <button onclick="window.location.href='https://lsposed.zip'">
-    Lsposed
-    <small>Lsposed</small></button>
-    <button onclick="download('snake-4/Zygisk-Assistant')">Zygisk Assistant<small>snake-4</small></button>
-	<button onclick="window.location.href='https://dl.google.com/android/repository/usb_driver_r13-windows.zip'">
-    Fastboot / USB Driver
-    <small>Google · Windows</small></button>
-    <button onclick="window.location.href='https://dl.google.com/android/repository/platform-tools-latest-windows.zip'">
-    Platform Tools
-    <small>ADB / Fastboot · Windows</small></button>
-	<button onclick="window.location.href='https://www.ultraviewer.net/en/UltraViewer_setup_6.6_en.exe'">
-    UltraViewer
-    <small>Ultraviewer</small></button>
-	<button onclick="window.location.href='https://anydesk.com/en/downloads/thank-you?dv=win_exe'">
-    Anydesk
-    <small>Anydesk</small></button>
-	<button onclick="window.location.href='https://raw.githubusercontent.com/sadique2k22/RMDA/refs/heads/main/RootCheckerPro.apk'">
-    Root checker
-    <small>Pro</small></button>
 
-    <button onclick="download('Genymobile/scrcpy')">scrcpy<small>Genymobile</small></button>
+    <button onclick="download('PerformanC/ReZygisk')">
+        ReZygisk
+        <small>PerformanC</small>
+    </button>
+
+    <button onclick="download('5ec1cff/TrickyStore')">
+        Tricky Store
+        <small>5ec1cff</small>
+    </button>
+
+    <button onclick="download('KOWX712/Tricky-Addon-Update-Target-List')">
+        Tricky Addon
+        <small>KOWX712</small>
+    </button>
+
+    <button onclick="download('MeowDump/Integrity-Box')">
+        Integrity Box
+        <small>MeowDump</small>
+    </button>
+
+    <button onclick="download('frknkrc44/HMA-OSS')">
+        HMA-OSS
+        <small>frknkrc44</small>
+    </button>
+
+    <!-- ADBhide: APK -->
+    <button onclick="download('Xposed-Modules-Repo/com.adbhide', '.apk')">
+        ADBhide
+        <small>xposed-module · APK</small>
+    </button>
+
+    <button onclick="window.location.href='https://lsposed.zip'">
+        Lsposed
+        <small>Lsposed</small>
+    </button>
+
+    <!-- KernelSU-Next: APK containing "spoofed" -->
+    <button onclick="download('KernelSU-Next/KernelSU-Next', '.apk', 'spoofed')">
+        KSU-NEXT
+        <small>KernelSU Next · Spoofed APK</small>
+    </button>
+
+    <button onclick="download('snake-4/Zygisk-Assistant')">
+        Zygisk Assistant
+        <small>snake-4</small>
+    </button>
+
+    <button onclick="window.location.href='https://dl.google.com/android/repository/usb_driver_r13-windows.zip'">
+        Fastboot / USB Driver
+        <small>Google · Windows</small>
+    </button>
+
+    <button onclick="window.location.href='https://dl.google.com/android/repository/platform-tools-latest-windows.zip'">
+        Platform Tools
+        <small>ADB / Fastboot · Windows</small>
+    </button>
+
+    <button onclick="window.location.href='https://www.ultraviewer.net/en/UltraViewer_setup_6.6_en.exe'">
+        UltraViewer
+        <small>Ultraviewer</small>
+    </button>
+
+    <button onclick="window.location.href='https://anydesk.com/en/downloads/thank-you?dv=win_exe'">
+        Anydesk
+        <small>Anydesk</small>
+    </button>
+
+    <button onclick="window.location.href='https://raw.githubusercontent.com/sadique2k22/RMDA/refs/heads/main/RootCheckerPro.apk'">
+        Root checker
+        <small>Pro</small>
+    </button>
+
+    <button onclick="download('Genymobile/scrcpy')">
+        scrcpy
+        <small>Genymobile</small>
+    </button>
+
 </div>
 
 <script>
-async function download(repo) {
+async function download(repo, extension = '.zip', keyword = '') {
     const api = `https://api.github.com/repos/${repo}/releases/latest`;
 
     try {
         const res = await fetch(api);
+
+        if (!res.ok) {
+            throw new Error('GitHub API request failed');
+        }
+
         const data = await res.json();
 
-        let zips = data.assets.filter(a =>
-            a.name.toLowerCase().endsWith('.zip') &&
-            !a.name.toLowerCase().includes('source')
+        let assets = data.assets.filter(a =>
+            a.name.toLowerCase().endsWith(extension.toLowerCase()) &&
+            !a.name.toLowerCase().includes('source') &&
+            a.name.toLowerCase().includes(keyword.toLowerCase())
         );
 
-        if (!zips.length) {
-            alert('No ZIP assets found. Repo is misbehaving.');
+        if (!assets.length) {
+            alert(`No matching ${extension} assets found in the latest release.`);
             return;
         }
 
-        let releaseZips = zips.filter(a =>
-            a.name.toLowerCase().includes('release')
-        );
-
-        let candidates = releaseZips.length ? releaseZips : zips;
-
-        candidates.sort((a, b) =>
+        assets.sort((a, b) =>
             new Date(b.updated_at) - new Date(a.updated_at)
         );
 
-        window.location.href = candidates[0].browser_download_url;
+        window.location.href = assets[0].browser_download_url;
 
-    } catch {
+    } catch (error) {
         alert('GitHub API failed. Internet or GitHub issue.');
     }
 }
@@ -115,5 +174,3 @@ async function download(repo) {
 
 </body>
 </html>
-
-
